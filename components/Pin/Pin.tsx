@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 interface PinProps {
   pin: {
+    id: string;
     title: string;
     image: string;
   };
@@ -12,9 +14,8 @@ interface PinProps {
 const Pin = (props: PinProps) => {
   const [ratio, setRatio] = useState(1);
 
-  const { title, image } = props.pin;
-
-  const onLike = () => {};
+  const { id, title, image } = props.pin;
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (image) {
@@ -22,8 +23,14 @@ const Pin = (props: PinProps) => {
     }
   }, [image]);
 
+  const onLike = () => {};
+
+  const goToPinScreen = () => {
+    navigation.navigate("Pin", { id });
+  };
+
   return (
-    <View style={styles.pin}>
+    <Pressable onPress={goToPinScreen} style={styles.pin}>
       <View>
         <Image
           source={{
@@ -35,8 +42,10 @@ const Pin = (props: PinProps) => {
           <AntDesign name="hearto" size={16} color="black" />
         </Pressable>
       </View>
-      <Text style={styles.title} numberOfLines={2}>{title}</Text>
-    </View>
+      <Text style={styles.title} numberOfLines={2}>
+        {title}
+      </Text>
+    </Pressable>
   );
 };
 
@@ -45,14 +54,14 @@ export default Pin;
 const styles = StyleSheet.create({
   pin: {
     width: "100%",
-    padding: 4
+    padding: 4,
   },
   title: {
     fontSize: 16,
     lineHeight: 22,
     fontWeight: "600",
     margin: 5,
-    color: "#181818"
+    color: "#181818",
   },
   image: {
     width: "100%",
