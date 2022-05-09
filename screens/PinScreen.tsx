@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable } from "react-native";
+import { StyleSheet, Text, View, Image, Pressable, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import {
   SafeAreaView,
@@ -6,19 +6,49 @@ import {
 } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import pins from "../assets/data/pins";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNhostClient } from "@nhost/react";
+
+const GET_PIN_QUERY = `
+query MyQuery ($id: uuid!) {
+  pins_by_pk(id: $id) {
+    created_at
+    id
+    image
+    title
+    user {
+      avatarUrl
+      displayName
+      id
+    }
+  }
+}
+`;
 
 const PinScreen = () => {
+  const nhost = useNhostClient();
 
   const [ratio, setRatio] = useState(1);
+  const [pin, setPin] = useState(null);
 
-  const navigation = useNavigation()
-  const route = useRoute()
+  const navigation = useNavigation();
+  const route = useRoute();
   const insets = useSafeAreaInsets();
 
-  const pinId = route.params?.id
-  const  pin = pins.find(pin => pin.id === pinId)
+  const pinId = route.params?.id;
+
+  const fetchPin = async (pinId) => {
+    const response = await nhost.graphql.request(GET_PIN_QUERY, { id: pinId });
+    if (response.error) {
+      Alert.alert("Error fetching the pin");
+    } else {
+      setPin(response.data.pins_by_pk);
+    }
+  };
+
+  useEffect(() => {
+    fetchPin(pinId);
+  }, [pinId]);
 
   useEffect(() => {
     if (pin?.image) {
@@ -27,11 +57,11 @@ const PinScreen = () => {
   }, [pin]);
 
   const goBack = () => {
-    navigation.goBack()
+    navigation.goBack();
   };
 
   if (!pin) {
-    return <Text>Pin Not Found</Text>
+    return <Text>Pin Not Found</Text>;
   }
 
   return (
@@ -44,7 +74,10 @@ const PinScreen = () => {
         />
         <Text style={styles.title}>{pin.title}</Text>
       </View>
-      <Pressable onPress={goBack} style={[styles.backBtn, { top: insets.top + 20 }]}>
+      <Pressable
+        onPress={goBack}
+        style={[styles.backBtn, { top: insets.top + 20 }]}
+      >
         <Ionicons name="chevron-back" size={35} color="white" />
       </Pressable>
     </SafeAreaView>
