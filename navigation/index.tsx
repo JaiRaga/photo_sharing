@@ -27,6 +27,7 @@ import {
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import PinScreen from "../screens/PinScreen";
+import CreatePinScreen from "../screens/CreatePinScreen";
 
 export default function Navigation({
   colorScheme,
@@ -103,9 +104,9 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name="CreatePin"
-        component={HomeScreen}
+        component={CreatePinScreen}
         options={{
-          title: "Home",
+          title: "Create Pin",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="plus" size={30} color={color} />
           ),
