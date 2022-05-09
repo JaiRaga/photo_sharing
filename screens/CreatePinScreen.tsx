@@ -29,8 +29,8 @@ export default function CreatePinScreen() {
   };
 
   const onSubmit = () => {
-    console.warn(title)
-  }
+    console.warn(title);
+  };
 
   return (
     <View style={styles.root}>
