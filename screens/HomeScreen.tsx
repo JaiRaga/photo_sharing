@@ -1,43 +1,6 @@
-import { StyleSheet, ScrollView } from "react-native";
-
-import EditScreenInfo from "../components/EditScreenInfo";
-import Pin from "../components/Pin";
-import { Text, View } from "../components/Themed";
-import { RootTabScreenProps } from "../types";
 import pins from "../assets/data/pins";
+import MasonryList from "../components/MasonryList";
 
-export default function HomeScreen({ navigation }: RootTabScreenProps<"Home">) {
-  return (
-    <ScrollView>
-      <View style={styles.container}>
-        {/* 1st Column */}
-        <View style={styles.column}>
-          {pins
-            .filter((_, index) => index % 2 === 0)
-            .map((pin) => (
-              <Pin pin={pin} key={pin.id} />
-            ))}
-        </View>
-
-        {/* 2nd column */}
-        <View style={styles.column}>
-          {pins
-            .filter((_, index) => index % 2 === 1)
-            .map((pin) => (
-              <Pin pin={pin} key={pin.id} />
-            ))}
-        </View>
-      </View>
-    </ScrollView>
-  );
+export default function HomeScreen() {
+  return <MasonryList pins={pins} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    flexDirection: "row",
-  },
-  column: {
-    flex: 1,
-  },
-});
