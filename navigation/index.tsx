@@ -11,8 +11,15 @@ import {
   DarkTheme,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import * as React from "react";
-import { ColorSchemeName, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  ActivityIndicator,
+  ColorSchemeName,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+import { useAuthenticationStatus } from "@nhost/react";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -28,6 +35,7 @@ import {
 import LinkingConfiguration from "./LinkingConfiguration";
 import PinScreen from "../screens/PinScreen";
 import CreatePinScreen from "../screens/CreatePinScreen";
+import AuthStackNavigator from "./AuthStackNavigator";
 
 export default function Navigation({
   colorScheme,
@@ -51,26 +59,62 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const { isLoading, isAuthenticated } = useAuthenticationStatus();
+
+  console.log(
+    "1 index navigateion",
+    "isAuthenticated:",
+    isAuthenticated,
+    "isLoading:",
+    isLoading
+  );
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+  }
+
+  console.log(
+    "2 index navigateion",
+    "isAuthenticated:",
+    isAuthenticated,
+    "isLoading:",
+    isLoading
+  );
+
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Root"
-        component={BottomTabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Pin"
-        component={PinScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="NotFound"
-        component={NotFoundScreen}
-        options={{ title: "Oops!" }}
-      />
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+      {!isAuthenticated ? (
+        <Stack.Screen
+          name="Auth"
+          component={AuthStackNavigator}
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <>
+          <Stack.Screen
+            name="Root"
+            component={BottomTabNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Pin"
+            component={PinScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="NotFound"
+            component={NotFoundScreen}
+            options={{ title: "Oops!" }}
+          />
+          <Stack.Group screenOptions={{ presentation: "modal" }}>
+            <Stack.Screen name="Modal" component={ModalScreen} />
+          </Stack.Group>
+        </>
+      )}
     </Stack.Navigator>
   );
 }
